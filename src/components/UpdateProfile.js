@@ -56,7 +56,7 @@ export default function UpdateProfile() {
         )}
         <Segment>
           <Form
-            size="medium"
+            size="large"
             style={{ textAlign: "left" }}
             onSubmit={handleSubmit}
           >

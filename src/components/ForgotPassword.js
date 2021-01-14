@@ -51,7 +51,7 @@ export default function ForgotPassword() {
         )}
         <Segment>
           <Form
-            size="medium"
+            size="large"
             style={{ textAlign: "left" }}
             onSubmit={handleSubmit}
           >

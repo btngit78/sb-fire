@@ -51,7 +51,7 @@ export default function Signup() {
         )}
         <Segment>
           <Form
-            size="medium"
+            size="large"
             style={{ textAlign: "left" }}
             onSubmit={handleSubmit}
           >

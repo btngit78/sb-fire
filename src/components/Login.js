@@ -13,8 +13,9 @@ import {
 
 export function LoginformsHeader() {
   return (
+    // style must be applied here; using className will get overridden
     <Header
-      as="h2"
+      size="large"
       style={{ fontFamily: "Alice", color: "#980c3adb" }}
       textAlign="center"
     >
@@ -59,7 +60,7 @@ export default function Login() {
         )}
         <Segment>
           <Form
-            size="medium"
+            size="large"
             style={{ textAlign: "left" }}
             onSubmit={handleSubmit}
           >

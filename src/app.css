@@ -28,6 +28,12 @@
   max-width: 380px;
 }
 
+.loginforms-header {
+  font-family: Alice;
+  font-size: 20px;
+  color: #980c3adb;
+}
+
 .loginforms-title {
   font-size: 24px;
 }
