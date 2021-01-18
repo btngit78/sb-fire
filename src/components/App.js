@@ -7,14 +7,13 @@ import Login from "./Login";
 import PrivateRoute from "./PrivateRoute";
 import ForgotPassword from "./ForgotPassword";
 import UpdateProfile from "./UpdateProfile";
-import "semantic-ui-css/semantic.min.css";
 import "../app.css";
 
 function App() {
   return (
     <div className="app">
-      <Router>
-        <AuthProvider>
+      <AuthProvider>
+        <Router>
           <Switch>
             <PrivateRoute exact path="/" component={Dashboard} />
             <PrivateRoute path="/update-profile" component={UpdateProfile} />
@@ -22,8 +21,8 @@ function App() {
             <Route path="/login" component={Login} />
             <Route path="/forgot-password" component={ForgotPassword} />
           </Switch>
-        </AuthProvider>
-      </Router>
+        </Router>
+      </AuthProvider>
     </div>
   );
 }

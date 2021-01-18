@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { Link, useHistory } from "react-router-dom";
 import { Form, Button, Grid, Message, Segment } from "semantic-ui-react";
@@ -12,6 +12,11 @@ export default function UpdateProfile() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useHistory();
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (loggedIn) history.push("/");
+  }, [loggedIn, history]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -36,7 +41,7 @@ export default function UpdateProfile() {
       if (passwordRef.current.value) {
         await updatePassword(passwordRef.current.value);
       }
-      history.push("/");
+      setLoggedIn(true);
     } catch (e) {
       setError(e.message);
     } finally {

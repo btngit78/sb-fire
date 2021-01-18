@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { Link, useHistory } from "react-router-dom";
 import {
@@ -9,6 +9,7 @@ import {
   Image,
   Message,
   Segment,
+  Icon,
 } from "semantic-ui-react";
 
 export function LoginformsHeader() {
@@ -28,24 +29,35 @@ export function LoginformsHeader() {
 export default function Login() {
   const emailRef = useRef();
   const passwordRef = useRef();
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useHistory();
+  const [loggedIn, setLoggedIn] = useState(false);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  useEffect(() => {
+    if (loggedIn) history.push("/");
+  }, [loggedIn, history]);
 
+  async function doLogin(loginMode) {
     try {
       setError("");
       setLoading(true);
-      await login(emailRef.current.value, passwordRef.current.value);
-      history.push("/");
+      if (loginMode === "email") {
+        await login(emailRef.current.value, passwordRef.current.value);
+      } else if (loginMode === "google") {
+        await googleLogin();
+        // const credential = result.credential;
+        // const token = credential.accessToken;
+        // const user = result.user;
+        // console.log(result.user.email);
+      }
+      setLoggedIn(true);
     } catch (e) {
       setError(e.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
@@ -62,7 +74,10 @@ export default function Login() {
           <Form
             size="large"
             style={{ textAlign: "left" }}
-            onSubmit={handleSubmit}
+            onSubmit={(e) => {
+              e.preventDefault();
+              doLogin("email");
+            }}
           >
             <Form.Field id="email">
               <label>Email</label>
@@ -76,6 +91,20 @@ export default function Login() {
               Login
             </Button>
           </Form>
+          <br />
+          <Button
+            size="large"
+            color="red"
+            fluid
+            disabled={loading}
+            onClick={(e) => {
+              e.preventDefault();
+              doLogin("google");
+            }}
+          >
+            <Icon name="google" />
+            Sign in with Google
+          </Button>
         </Segment>
         <Segment basic>
           <Header size="small" floated="left">
