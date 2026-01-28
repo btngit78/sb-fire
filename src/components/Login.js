@@ -29,36 +29,43 @@ export function LoginformsHeader() {
 export default function Login() {
   const emailRef = useRef();
   const passwordRef = useRef();
-  const { login, googleLogin } = useAuth();
+  const { login, googleLogin, currentUser } = useAuth();
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [waiting, setWaiting] = useState(false);
   const history = useHistory();
-  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    if (loggedIn) history.push("/");
-  }, [loggedIn, history]);
+    if (currentUser) {
+      history.push("/");
+    }
+  });
 
   async function doLogin(loginMode) {
     try {
       setError("");
-      setLoading(true);
+      setWaiting(true);
       if (loginMode === "email") {
         await login(emailRef.current.value, passwordRef.current.value);
       } else if (loginMode === "google") {
         await googleLogin();
-        // const credential = result.credential;
-        // const token = credential.accessToken;
-        // const user = result.user;
-        // console.log(result.user.email);
       }
-      setLoggedIn(true);
+      // const cred = res.credential;
+      // const token = cred.accessToken;
+      // const user = res.user;
+      // console.log("Res: ", res, " Tkn: ", token, " User: ", user);
     } catch (e) {
       setError(e.message);
-    } finally {
-      setLoading(false);
+      setWaiting(false);
     }
   }
+
+  if (currentUser && !waiting) {
+    // logged in but not routed to home page yet
+    console.log("logged in but not routed yet! - user:", currentUser);
+    return <></>;
+  }
+
+  console.log("--- Login");
 
   return (
     <Grid className="loginforms-container">
@@ -87,7 +94,7 @@ export default function Login() {
               <label>Password</label>
               <input type="password" ref={passwordRef} required />
             </Form.Field>
-            <Button primary size="large" fluid disabled={loading} type="submit">
+            <Button primary size="large" fluid disabled={waiting} type="submit">
               Login
             </Button>
           </Form>
@@ -96,7 +103,7 @@ export default function Login() {
             size="large"
             color="red"
             fluid
-            disabled={loading}
+            disabled={waiting}
             onClick={(e) => {
               e.preventDefault();
               doLogin("google");

@@ -1,10 +1,16 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { Link, useHistory } from "react-router-dom";
-import { Form, Button, Grid, Message, Segment } from "semantic-ui-react";
-import { LoginformsHeader } from "./Login.js";
+import { useHistory } from "react-router-dom";
+import {
+  Form,
+  Button,
+  Grid,
+  Message,
+  Segment,
+  Header,
+} from "semantic-ui-react";
 
-export default function UpdateProfile() {
+export default function Settings() {
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
@@ -12,11 +18,15 @@ export default function UpdateProfile() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useHistory();
-  const [loggedIn, setLoggedIn] = useState(false);
+  // const [loggedIn, setLoggedIn] = useState(false);
 
-  useEffect(() => {
-    if (loggedIn) history.push("/");
-  }, [loggedIn, history]);
+  // useEffect(() => {
+  //   if (loggedIn) history.push("/");
+  // }, [loggedIn, history]);
+
+  const handleCancel = () => {
+    history.goBack();
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -41,7 +51,8 @@ export default function UpdateProfile() {
       if (passwordRef.current.value) {
         await updatePassword(passwordRef.current.value);
       }
-      setLoggedIn(true);
+      // setLoggedIn(true);
+      history.push("/");
     } catch (e) {
       setError(e.message);
     } finally {
@@ -52,8 +63,7 @@ export default function UpdateProfile() {
   return (
     <Grid className="loginforms-container">
       <Grid.Column className="loginforms">
-        <LoginformsHeader />
-        <p className="loginforms-title">Update profile</p>
+        <Header size="medium">Change your email or password</Header>
         {error && (
           <Message error size="large">
             {error}
@@ -97,7 +107,12 @@ export default function UpdateProfile() {
           </Form>
         </Segment>
         <div style={{ textAlign: "right" }}>
-          <Link to="/">Cancel update</Link>
+          <span
+            style={{ cursor: "pointer", color: "blue" }}
+            onClick={handleCancel}
+          >
+            Cancel update
+          </span>
         </div>
       </Grid.Column>
     </Grid>

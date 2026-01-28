@@ -1,3 +1,5 @@
+// Copyright 2021 by Nghia Nguyen
+//
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./components/App";

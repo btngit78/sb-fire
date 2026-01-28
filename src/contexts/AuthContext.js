@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import firebase from "firebase/app";
 import { auth } from "../firebase";
 
-const AuthContext = React.createContext();
+export const AuthContext = React.createContext();
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -11,6 +11,11 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
+  const [email, setEmail] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   function signup(email, password) {
     return auth.createUserWithEmailAndPassword(email, password);
@@ -21,6 +26,12 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
+    setCurrentUser(null);
+    setIsAdmin(false);
+    setIsPremium(false);
+    setEmail(null);
+    setUserId(null);
+    setUserName(null);
     return auth.signOut();
   }
 
@@ -42,8 +53,26 @@ export function AuthProvider({ children }) {
     return auth.signInWithPopup(provider);
   }
 
+  function hasWritePrivilege(uid) {
+    return isAdmin || (isPremium && uid === userId);
+  }
+
+  function isLoggedIn() {
+    return currentUser !== null;
+  }
+
+  function userStateChange(cb) {
+    return auth.onAuthStateChanged(cb);
+  }
+
   const value = {
     currentUser,
+    isAdmin,
+    isPremium,
+    email,
+    userName,
+    userId,
+    isLoggedIn,
     login,
     signup,
     logout,
@@ -51,12 +80,30 @@ export function AuthProvider({ children }) {
     updateEmail,
     updatePassword,
     googleLogin,
+    hasWritePrivilege,
+    userStateChange,
   };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
       setLoading(false);
+
+      if (auth.currentUser) {
+        auth.currentUser
+          .getIdTokenResult()
+          .then((idTokenResult) => {
+            console.log(" claims: ", idTokenResult.claims);
+            setIsAdmin(!!idTokenResult.claims.admin);
+            setIsPremium(!!idTokenResult.claims.premium);
+            setEmail(idTokenResult.claims.email ?? null);
+            setUserName(idTokenResult.claims.name ?? null);
+            setUserId(idTokenResult.claims.user_id ?? null);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     });
 
     return unsubscribe;
